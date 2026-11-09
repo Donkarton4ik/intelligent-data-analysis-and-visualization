@@ -10,3 +10,19 @@
 .AppleDouble
 .LSOverride
 Icon?
+
+# Python and Taipy
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.taipy/
+
+# Local course inputs and working files
+/ИАиВД_Материалы/
+/data/*
+!/data/README.md
+/reports/
+/.local/
+/artifacts/
+/catboost_info/
