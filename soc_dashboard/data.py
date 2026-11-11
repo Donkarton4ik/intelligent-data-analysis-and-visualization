@@ -63,11 +63,12 @@ def soc_cards():
     max_hours = (end - df.created.min()).total_seconds() / 3600
     df["duration_invalid"] = hours.notna() & ~hours.between(0, max_hours)
     df["duration_h"] = hours.where(hours.between(0, max_hours) & closed.notna() & df.label.notna())
-    return df
+    from .operations import prepare_operations
+    return prepare_operations(df)
 
 
 def select_soc(df, month=ALL, source=ALL, criticality=ALL, verdict=ALL,
-               start=None, end=None, status=ALL, incident_type=ALL):
+               start=None, end=None, status=ALL, incident_type=ALL, group=ALL):
     df = between_dates(df, start, end)
     mask = pd.Series(True, index=df.index)
     if month != ALL:
@@ -82,6 +83,8 @@ def select_soc(df, month=ALL, source=ALL, criticality=ALL, verdict=ALL,
         mask &= df.state.eq(status)
     if incident_type != ALL:
         mask &= df["Тип инцидента"].eq(incident_type)
+    if group != ALL:
+        mask &= df["group"].eq(group)
     return df.loc[mask]
 
 
