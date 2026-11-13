@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from soc_dashboard import operations
+from soc_dashboard.data import soc_cards
 
 
 def sample():
@@ -43,3 +44,19 @@ def test_target_normalization_counts_distinct_cards():
                          '["host.example", "0.0.0.0"]',r'\only-once\short']})
     assert operations.repeated_targets(frame).to_dict()=={'host.example':2}
     assert operations.targets('0.0.0.0|::|[]')==set()
+
+
+def test_operational_default_and_age_chart_reconcile():
+    from soc_dashboard import app
+    assert app.soc_defaults()['soc_status']=='Открыт'
+    result=app.soc_result(app.soc_defaults())
+    active=soc_cards()[lambda d:d.state.eq('Открыт')]
+    assert len(result['queue_table'])==len(active)==42055
+    assert int(result['soc_overdue'])==int(active.response_overdue.sum())
+    assert int(result['soc_waiting'])==int(active.waiting.sum())
+    assert sum(sum(t.x) for t in result['age_distribution'].data)==len(active)
+    targets=result['repeated_targets'].data[0]
+    assert list(targets.x)[::-1]==operations.repeated_targets(active).head(5).to_list()
+    trace=result['open_types'].data[0]
+    assert dict(zip(trace.customdata,trace.x))==active['Тип инцидента'].value_counts().head(5).to_dict()
+    assert 'soc_group' in app.SOC_FIELDS and 'soc_verdict' not in app.SOC_FIELDS

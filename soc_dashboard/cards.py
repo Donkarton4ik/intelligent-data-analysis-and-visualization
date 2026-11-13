@@ -119,7 +119,7 @@ PAGE='<|part|class_name=dashboard|\n'+intro('Инциденты SOC','',"""
 <|part|class_name=panel queue-panel primary-queue|
 <|Очередь разбора: приоритет и срок|text|class_name=panel-title|>
 
-<|{{queue_table}}|table|{readonly_columns('№;Тип;Уровень;Возраст;SLA;Действие')}|auto_loading=True|page_size=50|size=small|height=100%|on_action=on_queue_row|row_class_name=queue_row_class|cell_class_name[Уровень]=severity_cell_class|cell_class_name[Действие]=severity_cell_class|number_format=%d|>
+<|{{queue_table}}|table|{readonly_columns('№;Тип;Уровень;Возраст;SLA;Действие')}|auto_loading=True|page_size=50|size=small|height=100%|row_class_name=queue_row_class|cell_class_name[Уровень]=severity_cell_class|cell_class_name[Действие]=severity_cell_class|number_format=%d|>
 |>
 
 """+(

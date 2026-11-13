@@ -1,0 +1,178 @@
+:root { --ink: #454545; --muted: #606060; --line: #e5e5e5; --accent: #ff0000; }
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; background: #fff !important; color: var(--ink); }
+body { font-family: Arial, sans-serif; }
+.taipy-page { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+.header { height: 54px; margin: 0 16px; display: flex; align-items: center; gap: 28px; border-bottom: 1px solid var(--line); box-shadow: none !important; border-radius: 0 !important; background: white !important; }
+.header .brand { font-size: 18px; font-weight: 700; white-space: nowrap; }
+.header > .md-para:has(.taipy-navbar) { flex: 1; }
+.header .MuiTab-root { font-size: 16px; min-height: 50px; padding: 8px 18px; text-transform: none; }
+.header .MuiTabs-indicator { height: 2px; background: #555555; }
+.dashboard { height: calc(100dvh - 54px); padding: 12px 16px; display: grid; grid-template-rows: 52px 88px minmax(0, 1fr); gap: 12px; }
+.toolbar { display: grid; gap: 10px; align-items: center; min-width: 0; }
+.soc-toolbar { grid-template-columns: minmax(190px, 1fr) 130px 180px 145px 180px 75px; }
+.page-title { display: block; font-size: 26px; line-height: 1.15; font-weight: 700; letter-spacing: -.5px; }
+.toolbar .MuiFormControl-root { margin: 0; width: 100%; }
+.toolbar .MuiInputBase-root { height: 44px; font-size: 15px; }
+.toolbar .MuiInputLabel-root { font-size: 14px; }
+.toolbar .MuiOutlinedInput-notchedOutline { border-color: #cccccc; }
+.taipy-button.MuiButton-root { text-transform: none; font-size: 14px; line-height: 1.3; box-shadow: none; white-space: nowrap; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.kpi { border-bottom: 1px solid var(--line); min-width: 0; padding-bottom: 9px; }
+.kpi-value { display: block; font-size: clamp(32px, 3vw, 44px); font-weight: 600; line-height: 1.12; letter-spacing: -1px; }
+.kpi-label { display: block; margin-top: 8px; font-size: 16px; line-height: 1.25; }
+.alert .kpi-value, .alert-text { color: var(--accent); }
+.dashboard-grid { min-height: 0; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px 22px; }
+.panel { min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+.panel-title { display: block; font-size: 17px; line-height: 1.25; font-weight: 700; padding-bottom: 7px; }
+.header > .md-para, .toolbar > .md-para, .page-intro > .md-para, .kpi > .md-para, .panel > .md-para { margin: 0; min-height: 0; min-width: 0; }
+.panel > .md-para:has(.taipy-chart), .panel > p:has(.taipy-chart) { flex: 1; min-height: 0; }
+.panel .taipy-chart { width: 100% !important; height: 100% !important; min-height: 0; padding: 0; border: 0; box-shadow: none; background: transparent; }
+.span-two { grid-column: span 2; }
+.legend-row { display: flex; gap: 12px; flex-wrap: wrap; padding: 0 0 6px; }
+.legend-row > .md-para { margin: 0; }
+.legend-row .taipy-text { font-size: 14px; }
+.legend-signal { color: #707070; } .legend-fp { color: #777777; }
+.legend-other { color: #777777; } .legend-unknown { color: #666666; }
+@media (max-width: 1150px) {
+  .header { gap: 16px; }
+  .header .MuiTab-root { padding: 8px 12px; }
+  .soc-toolbar { grid-template-columns: minmax(170px, 1fr) 115px 150px 135px 145px 65px; gap: 8px; }
+  .page-title { font-size: 24px; }
+}
+@media (max-width: 850px) {
+  .header { height: auto; min-height: 54px; }
+  .header .brand { display: none; }
+  .header .MuiTab-root { font-size: 15px; padding: 6px; }
+  .dashboard { height: auto; min-height: calc(100dvh - 54px); display: flex; flex-direction: column; }
+  .toolbar { display: flex; flex-wrap: wrap; }
+  .page-intro { width: 100%; }
+  .toolbar > .md-para { flex: 1; min-width: 120px; }
+  .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: 300px; }
+  .span-two { grid-column: auto; }
+}
+
+
+/* На десктопе название раздела и все фильтры стоят в одном ряду. */
+.dashboard { grid-template-rows: 52px 88px minmax(0, 1fr); }
+.toolbar.soc-toolbar {
+  grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: 44px; gap: 16px; align-items: center;
+}
+.filters { display: grid; grid-auto-flow: column; gap: 6px; align-items: center; min-width: 0; }
+.soc-toolbar .filters {
+  grid-template-columns: 138px 138px minmax(82px, 1fr) minmax(90px, 1.3fr) minmax(105px, 1fr) minmax(100px, 1.3fr) minmax(100px, 1fr) 64px;
+}
+.filters > .md-para { margin: 0; min-width: 0; }
+.filters .MuiFormControl-root { width: 100%; min-width: 0; }
+.filters .MuiInputBase-root { font-size: 14px; }
+.filters .MuiInputBase-input { min-width: 0; }
+.filters .MuiInputLabel-root { font-size: 14px; }
+.filters .taipy-button { width: 100%; }
+@media (max-width: 1199px) {
+  .dashboard { height: auto; min-height: calc(100dvh - 54px); grid-template-rows: auto 88px minmax(520px, 1fr); }
+  .toolbar.soc-toolbar { grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: auto; align-items: center; }
+  .soc-toolbar .filters {
+    grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+  }
+}
+@media (max-width: 850px) {
+  .toolbar.soc-toolbar { display: flex; flex-direction: column; align-items: stretch; }
+  .soc-toolbar .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.toolbar > .page-intro { align-self: center; }
+.toolbar .page-title { white-space: nowrap; }
+
+.critical-text, .taipy-table .critical-text { color: #FF0000 !important; font-weight: 700; }
+.kpi-label > .md-para { margin: 0; }
+.taipy-selector:has(input[value="Критическая"]) .MuiSelect-select,
+.taipy-selector input[value="Критическая"] { color: #FF0000; }
+.dashboard > .kpi-row { grid-row: 2; grid-column: 1; }
+.dashboard > .dashboard-grid { grid-row: 3; grid-column: 1; }
+.queue-panel > .md-para:has(.taipy-table) { flex: 1; min-height: 0; }
+.queue-panel .taipy-table { height: 100%; margin: 0; }
+.queue-panel .taipy-table > .MuiPaper-root {
+  height: 100%; min-height: 0; margin: 0; display: flex; flex-direction: column;
+}
+.queue-panel .taipy-table .MuiTableContainer-root { flex: 1 1 auto; min-height: 0; }
+.queue-panel .taipy-table .MuiTablePagination-root { flex-shrink: 0; }
+.queue-panel .taipy-table th { font-size: 14px; font-weight: 700; padding: 8px 7px; }
+.queue-panel .taipy-table td { font-size: 15px; line-height: 1.25; padding: 8px 7px; }
+.queue-panel .taipy-table td:nth-child(2) { max-width: 240px; white-space: normal; overflow-wrap: anywhere; }
+.queue-panel .taipy-table tbody tr { cursor: pointer; }
+.queue-panel .taipy-table .queue-critical td:first-child,
+.queue-panel .taipy-table .queue-overdue td:first-child { border-left: 3px solid #FF0000; font-weight: 700; }
+.queue-panel .taipy-table .queue-critical { background: #fafafa; }
+.queue-panel .taipy-table .queue-overdue { background: #f5f5f5; }
+.legend-signal::before, .legend-fp::before {
+  content: ''; display: inline-block; width: 24px; height: 13px; margin-right: 6px; vertical-align: middle; border: 1px solid #555;
+}
+.legend-signal::before { background: #707070; }
+.legend-fp::before { background: #AAAAAA; }
+
+.soc-operations-grid { grid-template-rows: minmax(245px, 1.12fr) minmax(250px, 1fr); }
+.soc-operations-grid .primary-queue { grid-column: 1 / 3; grid-row: 1; }
+.soc-operations-grid .types-panel { grid-column: 1; grid-row: 2; }
+.soc-operations-grid .severity-panel { grid-column: 3; grid-row: 1; }
+.soc-operations-grid .targets-panel { grid-column: 2; grid-row: 2; }
+.soc-operations-grid .period-panel { grid-column: 3; grid-row: 2; }
+.operations-grid .taipy-table table { table-layout: fixed; width: 100%; }
+.operations-grid .taipy-table td,
+.operations-grid .taipy-table td:nth-child(2) {
+  height: 42px; padding: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Встроенная автоподгрузка Taipy: виртуальный список заполняет остаток высоты. */
+.queue-panel .taipy-table-autoloading .MuiTableContainer-root {
+  display: flex; flex-direction: column; height: 100%; overflow: hidden;
+}
+.queue-panel .taipy-table-autoloading .MuiTableContainer-root > table { flex: 0 0 auto; }
+.queue-panel .taipy-table-autoloading .MuiTableContainer-root > .MuiBox-root {
+  flex: 1 1 0; min-height: 0; height: auto !important;
+}
+.queue-panel .taipy-table-autoloading .MuiTableCell-body {
+  height: 37px; padding: 7px; font-size: 15px; line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.queue-panel .queue-critical > .MuiTableCell-body:first-child,
+.queue-panel .queue-overdue > .MuiTableCell-body:first-child { border-left: 3px solid #FF0000; font-weight: 700; }
+.soc-operations-grid .primary-queue {
+  --queue-columns: 74px minmax(0, 1fr) 110px 84px 119px minmax(190px, .72fr);
+}
+.soc-operations-grid .primary-queue .taipy-table-autoloading .MuiTableContainer-root { overflow-x: auto; }
+.soc-operations-grid .primary-queue table,
+.soc-operations-grid .primary-queue .MuiTableContainer-root > .MuiBox-root { min-width: 750px; }
+.soc-operations-grid .primary-queue thead { display: block; }
+.soc-operations-grid .primary-queue thead tr,
+.soc-operations-grid .primary-queue [role="row"][data-index] {
+  display: grid;
+  grid-template-columns: var(--queue-columns);
+}
+.soc-operations-grid .primary-queue thead,
+.soc-operations-grid .primary-queue .MuiTableContainer-root > .MuiBox-root > div > div {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+.soc-operations-grid .primary-queue thead { overflow-y: hidden; }
+.soc-operations-grid .primary-queue th,
+.soc-operations-grid .primary-queue [data-index] > .MuiTableCell-body {
+  min-width: 0;
+  width: auto;
+  overflow: hidden;
+}
+.soc-operations-grid .primary-queue .MuiTableCell-body > .MuiBadge-root {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 1199px) {
+  .operations-grid { min-height: 520px; }
+}
+@media (max-width: 850px) {
+  .header { flex-wrap: wrap; }
+  .dashboard > .kpi-row, .dashboard > .dashboard-grid { grid-row: auto; }
+  .soc-operations-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .soc-operations-grid > .panel { grid-row: auto; grid-column: 1; }
+  .soc-operations-grid { grid-auto-rows: minmax(300px, auto); }
+  .operations-grid .queue-panel { min-height: 450px; }
+}
