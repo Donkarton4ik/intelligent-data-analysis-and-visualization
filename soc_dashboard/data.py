@@ -103,3 +103,11 @@ def between_dates(df, start=None, end=None):
     if start is not None and end is not None and pd.Timestamp(start).date() > pd.Timestamp(end).date():
         raise ValueError("Начало периода позже конца")
     return df.loc[mask]
+
+
+@lru_cache(maxsize=64)
+def raw_card(entity_id):
+    frame = pd.read_parquet(DATASET, filters=[("EntityId", "=", int(entity_id))])
+    if len(frame) != 1:
+        raise ValueError("Инцидент не найден или EntityId не уникален")
+    return frame.iloc[0]

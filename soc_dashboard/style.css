@@ -34,6 +34,9 @@ body { font-family: Arial, sans-serif; }
 .legend-row .taipy-text { font-size: 14px; }
 .legend-signal { color: #707070; } .legend-fp { color: #777777; }
 .legend-other { color: #777777; } .legend-unknown { color: #666666; }
+.MuiDialogContent-root { font-size: 16px; line-height: 1.5; }
+.MuiDialogContent-root .taipy-table { margin: 16px 0; font-size: 16px; }
+.MuiDialogContent-root .taipy-table td { max-width: 650px; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 1150px) {
   .header { gap: 16px; }
   .header .MuiTab-root { padding: 8px 12px; }
@@ -176,3 +179,4 @@ body { font-family: Arial, sans-serif; }
   .soc-operations-grid { grid-auto-rows: minmax(300px, auto); }
   .operations-grid .queue-panel { min-height: 450px; }
 }
+.decision-note { display: block; font-size: 16px; font-weight: 600; }

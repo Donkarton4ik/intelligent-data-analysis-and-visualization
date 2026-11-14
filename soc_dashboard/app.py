@@ -1,10 +1,11 @@
 """Запуск: python -m soc_dashboard.app [--port 5050]."""
 import argparse
+import json
 
 import pandas as pd
 from taipy.gui import Gui, notify
 from . import cards
-from .data import ALL, date_limits, soc_cards
+from .data import ALL, date_limits, raw_card, soc_cards
 
 navigation = [('/cards', 'Инциденты SOC')]
 chart_config = {'displayModeBar':False,'responsive':True,'displaylogo':False}
@@ -30,6 +31,11 @@ SOC_FIELDS = list(soc_defaults())
 soc_applied = soc_defaults()
 globals().update(soc_applied)
 globals().update(soc_result(soc_applied))
+soc_detail_open = False
+soc_detail_title = ''
+soc_detail_action = ''
+soc_detail_action_class = 'decision-note'
+soc_detail_fields = pd.DataFrame(columns=['Поле', 'Значение'])
 
 
 def update(state, values):
@@ -73,11 +79,60 @@ def severity_cell_class(state,value,index,row,column_name):
     return 'critical-text' if 'крит' in str(value).lower() else ''
 
 
+def readable(value):
+    if value is None or (pd.api.types.is_scalar(value) and pd.isna(value)):
+        return "Не заполнено"
+    try:
+        decoded = json.loads(str(value))
+        if isinstance(decoded, list):
+            return "\n".join(map(str, decoded)) or "Пустой массив"
+    except (ValueError, TypeError):
+        pass
+    return str(value)
+
+
+def on_queue_row(state,var_name,payload):
+    # Taipy передаёт индекс исходной строки, в том числе после сортировки в UI.
+    table = state.queue_table
+    index = (payload or {}).get('index')
+    if index not in table.index:
+        return
+    selected = table.loc[index]
+    entity_id = int(selected['№'])
+    raw = raw_card(entity_id)
+    op = soc_cards().set_index('EntityId').loc[entity_id]
+    values = {
+        'Создан (UTC)':op.created.strftime('%d.%m.%Y %H:%M'),
+        'Критичность':op['Критичность'],'Возраст на дату среза':selected['Возраст'],
+        'SLA взятия':op.sla_state,'Норматив взятия, ч':op.take_sla_h,
+        'Дата взятия':op.taken_at,'Исполнитель':op.owner,'Группа':op['group'],
+        'Правило':op['Наименование'],'Тип':op['Тип инцидента'],
+        'Целевые узлы':raw.get('Hostname Цели'),'Источник':op['Источник инцидента'],
+        'Алерт':raw.get('Алерт'),'Команда':raw.get('Команда'),
+        'Описание':raw.get('Описание инцидента'),'Рекомендации по плейбуку':raw.get('Рекомендации по плейбуку'),
+    }
+    fields = pd.DataFrame({'Поле':list(values),'Значение':[readable(v) for v in values.values()]})
+    update(state,dict(soc_detail_open=True,
+        soc_detail_title=f'Инцидент №{entity_id}',soc_detail_action=selected['Действие'],soc_detail_fields=fields,
+        soc_detail_action_class='decision-note critical-text' if 'крит' in selected['Действие'].lower() else 'decision-note'))
+
+
+def close_soc_detail(state,id=None,payload=None):
+    state.soc_detail_open = False
+
+
 ROOT_PAGE = '''<|part|class_name=header|
 <|navbar|lov={navigation}|>
 
 |>
 <|content|>
+
+<|{soc_detail_open}|dialog|title={soc_detail_title}|width=90vw|labels=Закрыть|on_action=close_soc_detail|
+<|{soc_detail_action}|text|class_name={soc_detail_action_class}|>
+
+<|{soc_detail_fields}|table|page_size=8|editable=False|height=55vh|cell_class_name[Значение]=severity_cell_class|>
+
+|>
 '''
 # Taipy получает глобальные переменные и обработчики из контекста этого модуля.
 gui = Gui(pages={'/': ROOT_PAGE, 'cards': cards.PAGE}, css_file='style.css')

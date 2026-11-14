@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 import numpy as np
 import pandas as pd
 from soc_dashboard import operations
@@ -60,3 +61,26 @@ def test_operational_default_and_age_chart_reconcile():
     trace=result['open_types'].data[0]
     assert dict(zip(trace.customdata,trace.x))==active['Тип инцидента'].value_counts().head(5).to_dict()
     assert 'soc_group' in app.SOC_FIELDS and 'soc_verdict' not in app.SOC_FIELDS
+
+
+
+class State(SimpleNamespace):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+
+def test_selected_row_uses_stable_index():
+    from soc_dashboard import app
+
+    table = operations.priority_queue(soc_cards().loc[lambda d: d.state.eq('Открыт')]).head(2)
+    table.index = [9, 3]
+    state = State(queue_table=table)
+    app.on_queue_row(state, 'queue_table', {'index': 3, 'reason': 'click'})
+    assert state.soc_detail_open
+    assert state.soc_detail_title == f"Инцидент №{table.loc[3, '№']}"
+    assert 'Критичность' in state.soc_detail_fields['Поле'].tolist()
+    assert app.severity_cell_class(None, 'Критическая', 0, None, None) == 'critical-text'
+    assert app.severity_cell_class(None, 'Высокая', 0, None, None) == ''
