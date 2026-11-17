@@ -24,5 +24,8 @@ __pycache__/
 !/data/README.md
 /reports/
 /.local/
-/artifacts/
-/catboost_info/
+/artifacts/*
+!/artifacts/own_model/
+/artifacts/own_model/*
+!/artifacts/own_model/metadata.json
+!/artifacts/own_model/predictions.parquet
