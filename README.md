@@ -16,4 +16,7 @@ uv pip install --python .venv/bin/python -r requirements.lock
 
 ## Отчёты
 
+В корне проекта лежат отчёты в Markdown.
+
 - [Лабораторная работа 1. Карточки SOC](lab-1.md)
+- [Лабораторная работа 2. Инференс модели](lab-2.md)
