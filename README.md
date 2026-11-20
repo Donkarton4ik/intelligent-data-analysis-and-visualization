@@ -2,7 +2,7 @@
 
 ## Запуск
 
-Подключите учебную выгрузку по инструкции в [data/README.md](data/README.md).
+Скачайте `iavd_ml_dataset.parquet` из папки `3.6_Пр_Интеграция_ML` и сохраните его по пути `data/iavd_ml_dataset.parquet` относительно корня репозитория. [Материалы курса на Яндекс Диске](https://disk.yandex.ru/d/waiZmiOzun8EZA)
 
 Понадобятся Python 3.11 и `uv`. Выполните команды из корня проекта.
 
