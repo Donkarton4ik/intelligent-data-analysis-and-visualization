@@ -59,13 +59,24 @@ body { font-family: Arial, sans-serif; }
 
 /* На десктопе название раздела и все фильтры стоят в одном ряду. */
 .dashboard { grid-template-rows: 52px 88px minmax(0, 1fr); }
-.toolbar.soc-toolbar {
+.toolbar.soc-toolbar, .toolbar.infer-toolbar {
   grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: 44px; gap: 16px; align-items: center;
 }
 .filters { display: grid; grid-auto-flow: column; gap: 6px; align-items: center; min-width: 0; }
 .soc-toolbar .filters {
   grid-template-columns: 138px 138px minmax(82px, 1fr) minmax(90px, 1.3fr) minmax(105px, 1fr) minmax(100px, 1.3fr) minmax(100px, 1fr) 64px;
 }
+.infer-toolbar .filters {
+  grid-template-columns: minmax(165px, 1.6fr) 138px 138px minmax(80px, 1fr) minmax(94px, 1fr) minmax(100px, 1fr) 214px 64px;
+}
+.infer-toolbar .infer-dataset-select .MuiSelect-select {
+  display: flex;
+  align-items: center;
+  white-space: normal;
+  line-height: 1.15;
+  padding-block: 4px;
+}
+.infer-toolbar .filters input[type="number"] { font-variant-numeric: tabular-nums; }
 .filters > .md-para { margin: 0; min-width: 0; }
 .filters .MuiFormControl-root { width: 100%; min-width: 0; }
 .filters .MuiInputBase-root { font-size: 14px; }
@@ -74,14 +85,14 @@ body { font-family: Arial, sans-serif; }
 .filters .taipy-button { width: 100%; }
 @media (max-width: 1199px) {
   .dashboard { height: auto; min-height: calc(100dvh - 54px); grid-template-rows: auto 88px minmax(520px, 1fr); }
-  .toolbar.soc-toolbar { grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: auto; align-items: center; }
-  .soc-toolbar .filters {
+  .toolbar.soc-toolbar, .toolbar.infer-toolbar { grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: auto; align-items: center; }
+  .soc-toolbar .filters, .infer-toolbar .filters {
     grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
   }
 }
 @media (max-width: 850px) {
-  .toolbar.soc-toolbar { display: flex; flex-direction: column; align-items: stretch; }
-  .soc-toolbar .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolbar.soc-toolbar, .toolbar.infer-toolbar { display: flex; flex-direction: column; align-items: stretch; }
+  .soc-toolbar .filters, .infer-toolbar .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .toolbar > .page-intro { align-self: center; }
 .toolbar .page-title { white-space: nowrap; }
@@ -180,3 +191,17 @@ body { font-family: Arial, sans-serif; }
   .operations-grid .queue-panel { min-height: 450px; }
 }
 .decision-note { display: block; font-size: 16px; font-weight: 600; }
+@media (min-width: 1261px) and (max-width: 1320px) {
+  .infer-toolbar .page-title { font-size: 22px; }
+}
+@media (max-width: 1260px) {
+  .toolbar.infer-toolbar { grid-template-columns: max-content minmax(0, 1fr); grid-template-rows: auto; }
+  .infer-toolbar .filters { grid-auto-flow: row; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+}
+@media (min-width: 1200px) and (max-width: 1260px) {
+  .dashboard:has(.infer-toolbar) {
+    height: auto;
+    min-height: calc(100dvh - 54px);
+    grid-template-rows: auto 88px minmax(520px, 1fr);
+  }
+}

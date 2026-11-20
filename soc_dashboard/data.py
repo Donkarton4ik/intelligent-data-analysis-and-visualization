@@ -111,3 +111,30 @@ def raw_card(entity_id):
     if len(frame) != 1:
         raise ValueError("Инцидент не найден или EntityId не уникален")
     return frame.iloc[0]
+
+
+@lru_cache(maxsize=2)
+def model_cards(dataset="Своя модель · тест"):
+    from .ml import predictions
+
+    split = {"Своя модель · тест": "test", "Своя модель · сентябрь": "fresh"}[dataset]
+    saved = predictions()
+    selected = saved.loc[saved.split.eq(split)].copy()
+    fields = ["Наименование", "Критичность", "Источник инцидента", "Тип инцидента"]
+    cards = soc_cards().set_index("EntityId")
+    selected = selected.join(cards[fields], on="EntityId", validate="one_to_one")
+    enrichment = pd.read_parquet(DATASET, columns=["EntityId", "Алерт", "Вендор из сием"])
+    selected = selected.join(enrichment.set_index("EntityId"), on="EntityId", validate="one_to_one")
+    selected["day"] = selected.created.dt.floor("D").dt.tz_localize(None)
+    for field in ["Алерт", "Вендор из сием"]:
+        selected["filled_" + field] = filled(selected[field])
+    return selected
+
+
+def select_model(df, start=None, end=None, source=ALL, criticality=ALL, incident_type=ALL):
+    df = between_dates(df, start, end)
+    mask = pd.Series(True,index=df.index)
+    for name, value in [("Источник инцидента",source),("Критичность",criticality),("Тип инцидента",incident_type)]:
+        if value != ALL:
+            mask &= df[name].eq(value)
+    return df.loc[mask]

@@ -1,18 +1,27 @@
 """Запуск: python -m soc_dashboard.app [--port 5050]."""
 import argparse
+import math
 import json
 
 import pandas as pd
 from taipy.gui import Gui, notify
-from . import cards
-from .data import ALL, date_limits, raw_card, soc_cards
+from . import cards, inference
+from .data import ALL, date_limits, model_cards, raw_card, soc_cards
+from .ml import metadata
 
-navigation = [('/cards', 'Инциденты SOC')]
+navigation = [('/cards', 'Инциденты SOC'), ('/inference', 'Инференс модели')]
 chart_config = {'displayModeBar':False,'responsive':True,'displaylogo':False}
 soc_sources = [ALL, *sorted(soc_cards()['Источник инцидента'].unique())]
 soc_criticalities = [ALL, *sorted(soc_cards()['Критичность'].unique())]
 soc_types = [ALL, *sorted(soc_cards()['Тип инцидента'].unique())]
 soc_groups = [ALL,*sorted(soc_cards()['group'].unique())]
+
+
+DEFAULT_INFER_DATASET = 'Своя модель · тест'
+infer_dataset_options = [
+    (DEFAULT_INFER_DATASET, 'GradientBoosting test (август)'),
+    ('Своя модель · сентябрь', 'GradientBoosting inference (сентябрь)'),
+]
 
 
 def soc_defaults():
@@ -21,16 +30,32 @@ def soc_defaults():
                 soc_criticality=ALL,soc_type=ALL,soc_group=ALL)
 
 
+def infer_defaults(dataset):
+    start,end = date_limits(model_cards(dataset))
+    return dict(infer_dataset=dataset,infer_start=start,infer_end=end,infer_source=ALL,
+                infer_criticality=ALL,infer_type=ALL,infer_tau=metadata()['threshold'])
+
+
 def soc_result(values):
     return cards.build(source=values['soc_source'],criticality=values['soc_criticality'],
         group=values['soc_group'],start=values['soc_start'],end=values['soc_end'],
         status=values['soc_status'],incident_type=values['soc_type'])
 
 
+def infer_result(values):
+    return inference.build(dataset=values['infer_dataset'],tau=values['infer_tau'],
+        start=values['infer_start'],end=values['infer_end'],source=values['infer_source'],
+        criticality=values['infer_criticality'],incident_type=values['infer_type'])
+
+
 SOC_FIELDS = list(soc_defaults())
 soc_applied = soc_defaults()
 globals().update(soc_applied)
 globals().update(soc_result(soc_applied))
+infer_applied = infer_defaults(DEFAULT_INFER_DATASET)
+INFER_FIELDS = list(infer_applied)
+globals().update(infer_applied)
+globals().update(infer_result(infer_applied))
 soc_detail_open = False
 soc_detail_title = ''
 soc_detail_action = ''
@@ -67,6 +92,34 @@ def on_soc_change(state,var_name,value):
 def reset_soc_filters(state,id=None,payload=None):
     values = soc_defaults()
     update(state,{**values,**soc_result(values),'soc_applied':values.copy()})
+
+
+def on_inference_change(state,var_name,value):
+    values = {name:getattr(state,name) for name in INFER_FIELDS}
+    values[var_name] = value
+    try:
+        check_dates(values['infer_start'],values['infer_end'])
+        tau = float(values['infer_tau'])
+        if not math.isfinite(tau) or not 0 <= tau <= 1:
+            raise ValueError('Порог должен быть числом от 0 до 1')
+        values['infer_tau'] = tau
+        result = infer_result(values)
+    except (TypeError,ValueError) as error:
+        notify(state,'warning',str(error))
+        update(state,state.infer_applied)
+        return
+    update(state,{**values,**result,'infer_applied':values.copy()})
+
+
+def on_inference_dataset(state,var_name,value):
+    values = infer_defaults(value)
+    update(state,{**values,**infer_result(values),'infer_applied':values.copy()})
+
+
+def reset_inference_filters(state,id=None,payload=None):
+    # Сохраняем выбранную модель/выборку, сбрасываем всё остальное и её порог.
+    values = infer_defaults(state.infer_dataset)
+    update(state,{**values,**infer_result(values),'infer_applied':values.copy()})
 
 
 def queue_row_class(state,index,row):
@@ -135,7 +188,7 @@ ROOT_PAGE = '''<|part|class_name=header|
 |>
 '''
 # Taipy получает глобальные переменные и обработчики из контекста этого модуля.
-gui = Gui(pages={'/': ROOT_PAGE, 'cards': cards.PAGE}, css_file='style.css')
+gui = Gui(pages={'/': ROOT_PAGE, 'cards': cards.PAGE, 'inference': inference.PAGE}, css_file='style.css')
 
 
 def create_gui():
